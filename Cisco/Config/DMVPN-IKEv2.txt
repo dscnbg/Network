@@ -1,0 +1,53 @@
+interface Tunnel123
+ description DMVPN-DUAL-HUB-SINGLE-CLOUD
+ vrf forwarding SABO
+ ip address 10.0.0.2 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp map multicast 100.64.1.1
+ ip nhrp map 10.0.0.1 100.64.1.1
+ ip nhrp network-id 123
+ ip nhrp nhs 10.0.0.1
+ ip tcp adjust-mss 1360
+ ipv6 address 2A0C:0:0:0::2/64
+ ipv6 nhrp authentication DMVPN
+ ipv6 nhrp map multicast 100.64.1.1
+ ipv6 nhrp map 2A0C:0:0:0::1/128 100.64.1.1
+ ipv6 nhrp network-id 4010
+ ipv6 nhrp holdtime 3600
+ ipv6 nhrp nhs 2A0C:0:0:0::1
+ ipv6 nhrp redirect
+ tunnel source Port-channel1.3613
+ tunnel mode gre multipoint
+ tunnel key 123123123
+ tunnel vrf WAN
+ tunnel protection ipsec profile VPN-DMVPN
+end
+
+crypto ikev2 proposal IKEPRO-DMVPN
+ encryption aes-cbc-256
+ integrity sha512
+ group 20
+crypto ikev2 policy AES/GCM/256
+ match fvrf any
+ proposal IKEPRO-DMVPN
+crypto ikev2 keyring KEY-DMVPN
+ peer DMVPN1
+  address 100.64.1.1
+  identity address 100.64.1.1
+  pre-shared-key cisco123
+
+crypto ikev2 profile IKE-DMVPN
+ description PSK Profile
+ match fvrf any
+ match identity remote address 100.64.1.1 255.255.255.255
+ authentication remote pre-share
+ authentication local pre-share
+ keyring local KEY-DMVPN
+crypto ikev2 fragmentation
+crypto ipsec security-association replay window-size 1024
+crypto ipsec transform-set AES256/GCM/TRANSFORM esp-gcm 256
+ mode transport
+crypto ipsec profile VPN-DMVPN
+ set transform-set AES256/GCM/TRANSFORM
+ set ikev2-profile IKE-DMVPN
