@@ -702,7 +702,7 @@ def ForcepointNew(customerID, kuerzel, vlanidorange, customerslash56):
   querystring = "/subnets/" + customerslash56 + "/"
   blue = ipam.get(querystring)
   v6customer = blue['subnet'] + "/" + blue['mask']
-  scriptstring = "& python c:/Temp/Git/Forcepoint/new-customer.py --n %s --n %s --p %s" % (namelang, v4iporange, v6customer)
+  scriptstring = "& python c:/Temp/Git/Forcepoint/new-customer.py --c %s --n %s --p %s" % (namelang, v4iporange, v6customer)
   return scriptstring
 
 def DCNML3VLAN(vrf, vlanid, description):
