@@ -21,7 +21,7 @@ import urllib3
 urllib3.disable_warnings()
 import json
 import logging
-
+import argparse
 #################
 #
 # Automatische Anlage von IPv4 Host und IPv6 Network Objekten incl. 
@@ -62,9 +62,17 @@ session.login(url=fcpoint, api_key=key, verify=False)
 #Namensgebung
 #################
 
-cname = 'VPNGW'
-NATIP = '1.2.3.4'
-IPV6Network = '2a0c::/64'
+parser = argparse.ArgumentParser(description='Neuanlage Kunde auf Forcepoint')
+
+parser.add_argument("--c", required=True, type=str, help="customer mit Kürzel customer003-MEF")
+parser.add_argument("--n", required=True, type=str, help="NAT IP z. B. 185.213.32.15")
+parser.add_argument("--p", required=True, type=str, help="IPv6 Prefix /56 Network z. B. 2a0c:ed80:123::/56")
+
+args = parser.parse_args()
+
+cname = args.c
+NATIP = args.n
+IPV6Network = args.p
 
 #################
 #Strings zusammen bauen

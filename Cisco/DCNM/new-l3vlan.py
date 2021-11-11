@@ -6,6 +6,8 @@ import json
 import argparse
 import ipaddress
 
+import sys
+
 import logging
 import logging.handlers
 
@@ -20,6 +22,7 @@ from ipaddress import IPv6Interface
 from functions import getRestToken
 from functions import DCNMPost
 from functions import DCNMPost2
+from functions import returnVRF
 
 
 ##### Settings from settings.ini
@@ -69,6 +72,13 @@ logger.info('Settings %s', args)
 # Get Token
 token = getRestToken(dcnmuser, dcnmpassword, dcnmserver)
 
+
+vrfName = returnVRF(vrfName, dcnmserver, token)
+
+if vrfName == 0:
+    sys.exit("VRF Fehlerhaft")
+
+
 leer = ""
 uri2 = "/rest/managed-pool/fabrics/MSD001/segments/ids"
 segment = DCNMPost(leer, uri2, dcnmserver, token)
@@ -85,13 +95,10 @@ nested = {
     "mtu":"",
     "secondaryGW1":"",
     "secondaryGW2":"",
+    "secondaryGW3":"",
+    "secondaryGW4":"",
     "suppressArp":"false",
     "rtBothAuto":"false",
-    "enableL3OnBorder":"false",
-    "dhcpServerAddr1":"",
-    "dhcpServerAddr2":"",
-    "vrfDhcp":"",
-    "loopbackId":"",
     "tag":"12345",
     "vrfName":vrfName,
     "isLayer2Only":"false",
@@ -112,6 +119,8 @@ createVLAN = {
     "networkTemplate":"Default_Network_Universal",
     "networkExtensionTemplate":"Default_Network_Extension_Universal",
     "source":nullstring,
+    "interfaceGroups": nullstring,
+    "tenantName": nullstring,
     "serviceNetworkTemplate":nullstring
 }
 
@@ -122,7 +131,9 @@ createVLAN = json.dumps(createVLAN)
 uri = "/rest/top-down/fabrics/MSD001/networks"
 
 res = DCNMPost2(createVLAN, uri, dcnmserver, token)
-logger.info('Result: %s', res)
+logger.info('VLAN: %s', createVLAN)
+logger.info('VLAN API: %s', res.status)
+logger.info('VLAN API: %s', res.reason)
 #print(res)
 #print(createVLAN)
 # Attach everywhere

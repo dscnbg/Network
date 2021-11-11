@@ -3,6 +3,7 @@ import ssl
 import base64
 import string
 import json
+import copy
 
 from ipaddress import IPv4Interface
 from ipaddress import IPv6Interface
@@ -15,6 +16,73 @@ from ipaddress import IPv6Address
 
 #__author__ = "Louis Jia"
 #__copyright__ = "Copyright (C) 2018 Cisco System"
+
+class v4Route:
+  id = int
+  Prefix = ip_network
+  NextHop = ip_address
+  vrf = str
+  desc = str
+  tag = int
+  exists = bool
+  ignore = bool
+  def __init__(self, id, Prefix, NextHop, vrf, desc, tag):
+    self.id = id
+    self.Prefix = Prefix
+    self.NextHop = NextHop
+    self.vrf = vrf
+    self.desc = desc
+    self.tag = tag
+    self.exists = False
+  def setExists(self):
+    self.exists = True
+  def setIgnore(self):
+    self.ignore = True
+
+
+class v6Route:
+  id = int
+  Prefix = IPv6Network
+  NextHop = IPv6Address
+  vrf = str
+  desc = str
+  tag = int
+  exists = bool
+  ignore = bool
+  def __init__(self, id, Prefix, NextHop, vrf, desc, tag):
+    self.id = id
+    self.Prefix = Prefix
+    self.NextHop = NextHop
+    self.vrf = vrf
+    self.desc = desc
+    self.tag = tag
+    self.exists = False
+  def setExists(self):
+    self.exists = True
+  def setIgnore(self):
+    self.ignore = True
+
+class FabricSwitch:
+  SwitchName = str
+  Serial = str
+  Routev4 = []
+  Routev6 = []
+  def __init__(self, SwitchName, Serial):
+    self.SwitchName = SwitchName
+    self.Serial = Serial
+
+  def addRoutev4(self, r):
+    self.Routev4 = copy.deepcopy(r)
+  def addRoutev6(self, r):
+    self.Routev6 = copy.deepcopy(r)
+
+class vrfVergleich:
+  name = str
+  vergleich = str
+
+  def __init__(self, name):
+    self.name = name
+    self.vergleich = name.upper()
 
 class Cb3Vlan:
   vlanID = int
@@ -117,6 +185,28 @@ def  getVRFVLAN(serverip, resttoken):
 
   return decoded
 
+def  getNetworks(serverip, resttoken):
+  ssl._create_default_https_context = ssl._create_unverified_context
+ 
+  conn = http.client.HTTPSConnection(serverip)
+
+  headers = {
+    'dcnm-token': resttoken,
+    'content-type': "application/x-www-form-urlencoded",
+    'cache-control': "no-cache"
+    }
+
+
+  conn.request("GET", "/rest/top-down/fabrics/MSD001/networks", headers=headers)
+
+  res = conn.getresponse()
+  data = res.read()
+  jsonstr=data.decode("utf-8")
+  decoded = json.loads(jsonstr)
+  
+
+  return decoded
+
 def  getVRF(serverip, resttoken):
   ssl._create_default_https_context = ssl._create_unverified_context
  
@@ -138,6 +228,24 @@ def  getVRF(serverip, resttoken):
   
 
   return decoded
+
+def  returnVRF(vrf, dcnmserver, token):
+  # VRF Case Sensitive / Vergleich mit DCNM
+  uri = "/rest/top-down/v2/fabrics/MSD001/vrfs"
+
+  result = DCNMget(uri, dcnmserver, token)
+  vergleich = []
+
+  for results in result:
+    wip = results['vrfName']
+    vergleich.append(vrfVergleich(wip))
+
+  for vgl in vergleich:
+    if (vrf.upper() == vgl.vergleich):
+      return vgl.name
+
+  return 0
+    
 
 def  DCNMget(uri, serverip, resttoken):
   ssl._create_default_https_context = ssl._create_unverified_context

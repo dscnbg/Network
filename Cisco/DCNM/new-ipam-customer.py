@@ -38,6 +38,11 @@ config.read('C:/Temp/Git/Cisco/DCNM/settings.ini')
 dcnmuser = config.get('DCNM', 'dcnmuser')
 dcnmpassword = config.get('DCNM', 'dcnmpassword')
 dcnmserver = config.get('DCNM', 'dcnmserver')
+
+ipamuser = config.get('IPAM', 'ipamuser')
+ipampassword = config.get('IPAM', 'ipampassword')
+ipamserver = config.get('IPAM', 'url')
+
 ######
 
 servicename = customerName + '-Transfer-Service'
@@ -49,9 +54,9 @@ externname = customerName + '-Transfer-Extern'
 ipam = PhpIpamClient(
     url='https://ipam.consinto.com',
     app_id='network',
-    username=dcnmuser,
+    username=ipamuser,
     ssl_verify=False,
-    password=dcnmpassword,
+    password=ipampassword,
     user_agent='myapiclient', # custom user-agent header
 )
 
@@ -119,12 +124,12 @@ for IPAMVlan in IPAMvlans:
 redvlan = 0
 
 last = 3500
-for network in networks:
-    if network > 3500 and network < 3600:
-        if (last + 1) == network:
-            last = network
+for networkr in networks:
+    if networkr > 3500 and networkr < 3600:
+        if (last + 1) == networkr:
+            last = networkr
         else:
-            if (last + 1) != network:
+            if (last + 1) != networkr:
                 redvlan = last + 1
                 break
 

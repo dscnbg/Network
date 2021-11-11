@@ -43,6 +43,8 @@ parser = argparse.ArgumentParser(description='DCNM New IPv6 Route')
 parser.add_argument("--v", required=True, type=str, help="VRF Name")
 parser.add_argument("--p", required=True, type=IPv6Network, help="Prefix IPv6")
 parser.add_argument("--n", required=True, type=IPv6Address, help="Next Hop")
+parser.add_argument("--r", required=True, type=str, help="Route Name")
+parser.add_argument("--t", required=True, type=int, help="Route Tag")
 
 
 args = parser.parse_args()
@@ -50,6 +52,8 @@ args = parser.parse_args()
 vrfName = args.v
 prefix = args.p
 nextHop = args.n
+rname = args.r
+tag = args.t
 
 logger.info('Settings %s', args)
 
@@ -63,31 +67,18 @@ sCyo = """
     "serialNumber": "FDO23281LWE,FDO23301646,FDO23310G4W,FDO23310G4G,FDO23270DEW,FDO23270DEF",
     "entityType": "SWITCH",
     "entityName": "SWITCH",
-    "templateName": "vrf_static_route_v6",
+    "templateName": "dop_static_named_v6",
     "priority": "500",
     "nvPairs": {
         "VRF_NAME": "%s",
         "IPV6_PREFIX": "%s",
-        "NEXT_HOP_IPV6": "%s"
+        "NEXT_HOP_IPV6": "%s",
+        "RNAME": "%s",
+        "TAG": "%s"
     }
 }
-""" % (vrfName, prefix, nextHop)
+""" % (vrfName, prefix, nextHop, rname, tag)
 
-test2 = """
-{
-    "source": "",
-    "serialNumber": "FDO23281LWE,FDO23301646,FDO23310G4W,FDO23310G4G,FDO23270DEW,FDO23270DEF",
-    "entityType": "SWITCH",
-    "entityName": "SWITCH",
-    "templateName": "vrf_static_route_v6",
-    "priority": "500",
-    "nvPairs": {
-        "VRF_NAME": "Extern",
-        "IPv6_PREFIX": "2a0c:ed80:2:800::/56",
-        "NEXT_HOP_IPv6": "2a0c:ed80:0:c0a::2"
-    }
-}
-"""
 cyoResult = DCNMPost(sCyo, uri, dcnmserver, token)
 logger.info('Result CyrusOne: %s', cyoResult)
 #IXN
@@ -97,16 +88,17 @@ sIXN= """
     "serialNumber": "FDO23240C87,FDO2329188A,FDO2330163K,FDO23310G5H,FDO23310G5M,FDO23220EX6",
     "entityType": "SWITCH",
     "entityName": "SWITCH",
-    "templateName": "vrf_static_route_v6",
+    "templateName": "dop_static_named_v6",
     "priority": "500",
     "nvPairs": {
         "VRF_NAME": "%s",
         "IPV6_PREFIX": "%s",
-        "NEXT_HOP_IPV6": "%s"
+        "NEXT_HOP_IPV6": "%s",
+        "RNAME": "%s",
+        "TAG": "%s"
     }
 }
-
-""" % (vrfName, prefix, nextHop)
+""" % (vrfName, prefix, nextHop, rname, tag)
 #print(sCyo)
 ixnResult = DCNMPost(sIXN, uri, dcnmserver, token)
 logger.info('Result InterXion: %s', ixnResult)
