@@ -1,4 +1,10 @@
-
+settings.ini
+*.csv
+*.xlsx
 Fortinet/Fortigate/settings.ini
 
 Fortinet/Fortigate/settings.ini
+
+Cisco/DCNM/.gitignore
+
+Fortinet/Fortigate/.gitignore
