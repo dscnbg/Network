@@ -1,7 +1,7 @@
 from smc import session
 from smc.policy.layer3 import FirewallPolicy
 from smc.policy.layer3 import FirewallSubPolicy
-from smc.policy.layer3 import FirewallSubIpv6Policy
+from smc.policy.layer3 import FirewallIPv6SubPolicy
 from smc.policy.layer3 import FirewallRule
 from smc.policy.layer3 import FirewallTemplatePolicy
 from smc.policy.rule_elements import LogOptions
@@ -98,7 +98,7 @@ Network.create(name=cnameV6, ipv6_network=IPV6Network, comment='Erstellt via Scr
 #IPv6 Sub Policy erstellen
 #################
 
-p = FirewallSubIpv6Policy.create(name=cnameV6)
+p = FirewallIPv6SubPolicy.create(name=cnameV6)
 p.fw_ipv6_access_rules.create_rule_section(name='Outbound')
 p.fw_ipv6_access_rules.create(name='Default Outgoing', sources=[Network(cnameV6)], destinations='any', services=[TCPService('SSH'), TCPService('HTTP'), TCPService('HTTPS'), UDPService('NTP (UDP)'), ServiceGroup('DNS')], action='allow', after='Outbound')
 p.fw_ipv6_access_rules.create_rule_section(name='Inbound', add_pos=30)
@@ -142,7 +142,7 @@ newrule.move_rule_after(r)
 v6inboundpol = cname + 'v6-In'
 v6outbound = cname + 'v6-Out'
 
-subv6 = FirewallSubIpv6Policy(cnameV6)
+subv6 = FirewallIPv6SubPolicy(cnameV6)
 injectv6 = FirewallPolicy('Default Edge Policy')
 
 # Beim Anlegen der fw_ipv4_access_rules.create funktioniert das Keyword after='Customer' nicht - deshalb ein späterer Move der Regel und das Ausfindig Machen der Rule Section

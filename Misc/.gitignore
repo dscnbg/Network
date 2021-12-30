@@ -1,0 +1,7 @@
+settings.ini
+spielwiese.py
+*.xlsx
+*.csv
+/Ipv4
+/Ipv6
+/FW

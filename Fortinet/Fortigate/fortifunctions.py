@@ -1093,7 +1093,7 @@ def CreateGreenVlan(vlanid, name, description):
         ipamid = IPAMVlan['vlanId']
   return ipamid
 
-def CreateExternVlan(vlanid, name, description):
+def CreateExternVlan(vlanid, name, description, customcb3, customl3):
   config = ConfigParser()
   config.read('C:/Temp/Git/Fortinet/Fortigate/settings.ini')
 
@@ -1115,8 +1115,8 @@ def CreateExternVlan(vlanid, name, description):
     'name': name,
     'number': vlanid,
     'description': description,
-    'custom_CB3': 1,
-    'custom_L3': 1,
+    'custom_CB3': customcb3,
+    'custom_L3': customl3,
     'custom_VRF': 'Extern'})
   IPAMvlans = ipam.get('/vlan/', {
     'filter_by': 'domainId',

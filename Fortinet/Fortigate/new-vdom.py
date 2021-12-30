@@ -67,7 +67,7 @@ cfgbase = cfgbase + cfgblue
 if args.o:
     redvlan = NextFreeVlan(3500, 3600)
     redvlanname = customerID + "_" + namelang
-    redvlanID = CreateExternVlan(redvlan, redvlanname, namelang)
+    redvlanID = CreateExternVlan(redvlan, redvlanname, namelang, "1", "1")
     redv4SubnetID = CreateRedSubnetv4(redvlanID, redvlanname)
     redv6SubnetID = CreateRedSubnetv6(redvlanID, redvlanname)
 
@@ -77,7 +77,7 @@ if args.o:
 if args.r:
     redvlan = NextFreeVlan(3500, 3600)
     redvlanname = customerID + "_" + namelang
-    redvlanID = CreateExternVlan(redvlan, redvlanname, namelang)
+    redvlanID = CreateExternVlan(redvlan, redvlanname, namelang, "1", "1")
     redv4SubnetID = CreateRedSubnetv4(redvlanID, redvlanname)
     redv6SubnetID = CreateRedSubnetv6(redvlanID, redvlanname)
 
@@ -89,7 +89,7 @@ if args.r:
     ##############
     orangevlan = NextFreeVlan(2501, 2600)
     orangevlanname = customerID + "_" + namelang
-    orangevlanID = CreateExternVlan(orangevlan, orangevlanname, namelang)
+    orangevlanID = CreateExternVlan(orangevlan, orangevlanname, namelang, "0", "0")
     orangev4SubnetID = CreateOrangeSubnetv4(orangevlanID, orangevlanname)
     custslash56ID = CreateCustomerSlash56(orangevlanname)
     orangepublicname = orangevlanname + "_Public"
@@ -98,7 +98,7 @@ if args.r:
     cfgbase = cfgbase + cfgorange
 
 if args.g:
-    print(cfgbase)
+    #print(cfgbase)
     greenvlan = NextFreeVlan(830, 999)
     greenvlanname = customerID + "_" + namelang
     greenv6name = greenvlanname + "_Server"
@@ -108,9 +108,9 @@ if args.g:
     greenVlanID = CreateGreenVlan(greenvlan, greenvlanname, namelang)
     custgreenV6Id = CreateOrangeSubnetv6(greenVlanID, custslash56ID, greenv6name)
     greenoctet = NewGreenSubnet()
-    print(greenoctet)
+    #print(greenoctet)
     greensubnet = CreateGreenSubnetv4(greenVlanID, greenoctet, greenvlanname)
-    print(greensubnet)
+    #print(greensubnet)
 
     cfggreen = CLIGreen(greenVlanID, customerID)
     cfgbase = cfgbase + cfggreen
@@ -149,6 +149,10 @@ if args.r or args.o:
 if args.r:
     routeorange = DCNMv4Route("Extern", redvlanID, orangevlanID, namelang)
     dcnmText = dcnmText + routeorange
+    dcnmText = dcnmText + """
+"""
+    routeredv6 = DCNMv6Route("Extern", redvlanID, custslash56ID, namelang)
+    dcnmText = dcnmText + routeredv6
 
 dcnmText = dcnmText + """
 """
